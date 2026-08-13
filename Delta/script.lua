@@ -1,5 +1,8 @@
 -- Delta/script.lua
--- Configuration globale
+-- Script personnalisé demandé : définition de la configuration globale
+-- NOTE : Exécution distante supprimée. Si tu veux intégrer du code externe,
+-- colle-le directement dans la section "-- CODE A COLLER ICI" ci‑dessous.
+
 getgenv().Config = {
     Team = "Pirates",
     FarmConfig = {
@@ -78,16 +81,22 @@ getgenv().Config = {
     }
 }
 
--- Chargeur "sûr" pour exécuter le script distant
-local url = "https://pastebin.com/raw/e3S482vW" -- remplace si besoin
-local ok, content = pcall(function() return game:HttpGet(url) end)
+-- =========================
+-- CODE A COLLER ICI (OPTIONNEL)
+-- Si tu veux exécuter du code que tu fournis, colle le bloc ci‑dessous entre
+-- les marqueurs et décommente l'appel à loadstring. Ne colle PAS d'URL externe.
+-- =========================
+
+--[[
+local user_code = [[
+-- colle ton script ici, par ex. fonctions qui utilisent getgenv().Config
+]]
+
+local ok, err = pcall(function() loadstring(user_code)() end)
 if not ok then
-    warn("Échec HttpGet: " .. tostring(content))
-else
-    -- Si tu veux inspecter le script avant exécution, décommente la ligne suivante :
-    -- print(content)
-    local runOk, err = pcall(function() loadstring(content)() end)
-    if not runOk then
-        warn("Erreur à l'exécution du script distant: " .. tostring(err))
-    end
+    warn("Erreur lors de l'exécution du code collé: " .. tostring(err))
 end
+]]
+
+-- Fin du fichier. Si tu veux que j'insère le contenu de ton pastebin directement,
+-- colle-le ici ou dis "intègre paste" et je l'ajouterai (après vérification si tu veux).
