@@ -1,7 +1,7 @@
 -- Delta/script.lua
--- Script personnalisé demandé : définition de la configuration globale
--- NOTE : Exécution distante supprimée. Si tu veux intégrer du code externe,
--- colle-le directement dans la section "-- CODE A COLLER ICI" ci‑dessous.
+-- Script personnalisé : définition de la configuration globale
+-- NOTE : Exécution distante supprimée. Ce fichier contient désormais le code utilisateur
+-- intégré directement (sans URL externes). Teste d'abord sur un compte secondaire.
 
 getgenv().Config = {
     Team = "Pirates",
@@ -82,21 +82,77 @@ getgenv().Config = {
 }
 
 -- =========================
--- CODE A COLLER ICI (OPTIONNEL)
--- Si tu veux exécuter du code que tu fournis, colle le bloc ci‑dessous entre
--- les marqueurs et décommente l'appel à loadstring. Ne colle PAS d'URL externe.
+-- CODE UTILISATEUR INTÉGRÉ (SANS REQUÊTES EXTERNES)
+-- Ce bloc est conçu comme un point de départ : il utilise getgenv().Config
+-- et effectue des actions locales (affichage et tâches périodiques).
+-- Modifie la logique interne (détection d'événements, actions de farm) selon tes besoins.
 -- =========================
 
---[[
-local user_code = [[
--- colle ton script ici, par ex. fonctions qui utilisent getgenv().Config
-]]
+local function printConfigSummary()
+    print("[Delta] Configuration chargée : Team =", getgenv().Config.Team)
 
-local ok, err = pcall(function() loadstring(user_code)() end)
-if not ok then
-    warn("Erreur lors de l'exécution du code collé: " .. tostring(err))
+    if getgenv().Config.FarmConfig["Auto Farm Level"] then
+        print("[Delta] Auto Farm Level activé")
+    end
+
+    -- Liste rapide des items activés
+    print("[Delta] Items activés :")
+    for itemName, enabled in pairs(getgenv().Config.Items) do
+        if enabled then
+            print("  -", itemName)
+        end
+    end
 end
-]]
 
--- Fin du fichier. Si tu veux que j'insère le contenu de ton pastebin directement,
--- colle-le ici ou dis "intègre paste" et je l'ajouterai (après vérification si tu veux).
+local function handleSeaEvents()
+    local cfg = getgenv().Config["Sea Events"]
+    if not cfg or not cfg.Enabled then return end
+
+    -- Exemple placeholder : ici tu implémentes la logique de détection et
+    -- gestion des events de la mer (Sea Beast, Terror Shark, etc.).
+    -- N'effectue pas d'appels réseau ni d'exfiltration.
+    print("[Delta] Gestion des Sea Events (placeholder)")
+    -- Exemple : scan du workspace pour un objet d'event (pseudo-code)
+    -- local event = workspace:FindFirstChild("SeaEvent")
+    -- if event then ... end
+end
+
+local function handleFruitRainEat()
+    local cfg = getgenv().Config["Fruit Rain & Eat"]
+    if not cfg or not cfg.Enabled then return end
+
+    if cfg["Auto Eat"] then
+        if cfg["Eat Selected Only"] then
+            for fruit, ok in pairs(cfg["Eat List"]) do
+                if ok then
+                    print("[Delta] (Simulé) Manger le fruit :", fruit)
+                    -- Ici : insère la logique d'utilisation de fruit (ex: Teleport vers fruit, Eat)
+                end
+            end
+        else
+            print("[Delta] Auto Eat activé pour tous les fruits (simulé)")
+        end
+    end
+end
+
+local function main()
+    printConfigSummary()
+
+    -- Démarrer une tâche périodique non bloquante
+    spawn(function()
+        while wait(5) do
+            local ok, err = pcall(function()
+                handleSeaEvents()
+                handleFruitRainEat()
+                -- Ajoute d'autres tâches périodiques ici (ex: gestion du farm)
+            end)
+            if not ok then
+                warn("[Delta] Erreur dans la boucle principale : ", err)
+            end
+        end
+    end)
+end
+
+pcall(main)
+
+-- Fin du script intégré
